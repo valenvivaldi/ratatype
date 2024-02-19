@@ -42,7 +42,7 @@ impl Phrase {
 
         // check if ptr == len(self.phrase)
         // if so, reset
-        if self.char_ptr == self.phrase.len() + 1 {
+        if self.char_ptr == self.phrase.len() {
             self.reset();
         }
     }
