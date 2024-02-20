@@ -1,9 +1,8 @@
 use std::env;
 use std::io::Read;
-use std::{fs::File, io::BufReader};
+use std::{fs::File};
 
-use serde::{Deserialize, Serialize};
-use serde_json::Result;
+use serde::{Deserialize};
 
 use rand::prelude::*;
 
@@ -13,32 +12,40 @@ pub struct Phrase {
     pub char_ptr: usize,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 struct Words {
     content: Vec<String>,
 }
 
 fn gen_phrase() -> String {
     let json_path: String;
+
+    // TODO: (faqsarg - 20/02/2024) don't like this. can be improved?
     match env::current_dir() {
         Ok(current_dir) => {
             json_path = format!("{}/{}", current_dir.display().to_string(), "words.json");
         }
         Err(e) => {
-            panic!("Error al obtener el directorio actual: {}", e);
+            // TODO: (faqsarg - 20/02/2024) handle this in a better way
+            panic!("err obtaining current dir: {}", e);
         }
     }
+
+    // TODO: (faqsarg - 20/02/2024) handle this in a better way
     let mut json = File::open(&json_path).expect("error opening json");
+
     let mut json_content = String::new();
     match json.read_to_string(&mut json_content) {
-        Ok(_) => {}
-        Err(e) => panic!("err reading json"),
+        Ok(_) => {} //TODO: (faqsarg - 20/02/2024) check if this is good
+        Err(_) => panic!("err reading json"), // TODO: (faqsarg - 20/02/2024) handle this in a better way
     }
+    // TODO: (faqsarg - 20/02/2024) handle this in a better way
     let mut w: Words = serde_json::from_str(&json_content).expect("error deserializing");
 
     let mut rng = thread_rng();
     w.content.shuffle(&mut rng);
     let mut words = String::new();
+    // TODO: (faqsarg - 20/02/2024) can this be improved so I don't need to use a counter?
     let mut c = 0;
     for word in w.content {
         words.push_str(format!("{} ", word).as_str());
