@@ -45,7 +45,7 @@ pub fn handle_event(phrase: &Phrase) -> Result<(Option<bool>, bool), Error> {
     if event::poll(std::time::Duration::from_millis(50))? {
         if let Event::Key(k) = event::read()? {
             if k.kind == event::KeyEventKind::Press {
-                let chars: Vec<char> = phrase.phrase.chars().collect();
+                let chars: Vec<char> = phrase.queue.0.chars().collect();
                 let cur_char: char = *chars.get(phrase.char_ptr).unwrap();
                 let char_kc = KeyCode::Char(cur_char);
                 match k.code {
@@ -97,8 +97,8 @@ pub fn ui(frame: &mut Frame, phrase: &Phrase) {
 
 pub fn colored_text(phrase: &Phrase) -> Text {
     let mut colored_chars: Vec<Span> = Vec::new();
-    let phrase_chars: Vec<char> = phrase.phrase.chars().collect();
-    for i in 0..phrase.phrase.len() {
+    let phrase_chars: Vec<char> = phrase.queue.0.chars().collect();
+    for i in 0..phrase.queue.0.len() {
         let phrase_char = phrase_chars.get(i).unwrap();
         if i < phrase.colors.len() {
             let correct = phrase.colors.get(i).unwrap();
