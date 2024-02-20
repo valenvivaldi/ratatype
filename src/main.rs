@@ -69,8 +69,6 @@ pub fn handle_event(phrase: &Phrase) -> Result<(Option<bool>, bool), Error> {
 }
 
 pub fn ui(frame: &mut Frame, phrase: &Phrase) {
-    let a: Text = Text::from(Span::styled("jejeje", Style::new().fg(Color::Red)));
-
     let main_layout = Layout::new(
         Direction::Vertical,
         [Constraint::Length(1), Constraint::Percentage(10)],
