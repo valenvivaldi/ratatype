@@ -1,3 +1,4 @@
+use rand::prelude::*;
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
@@ -8,7 +9,8 @@ pub struct Phrase {
 }
 
 fn gen_phrase() -> String {
-    let words = [
+    let mut rng = thread_rng();
+    let mut words = [
         "sam",
         "frodo",
         "gondor",
@@ -16,6 +18,7 @@ fn gen_phrase() -> String {
         "fakita",
         "nolocasesacolon",
     ];
+    words.shuffle(&mut rng);
     let mut w = String::new();
     for word in words {
         w.push_str(format!("{} ", word).as_str());
@@ -25,7 +28,7 @@ fn gen_phrase() -> String {
 
 impl Phrase {
     pub fn new() -> Phrase {
-        let mut p = Phrase {
+        let p = Phrase {
             queue: (String::from(gen_phrase()), String::from(gen_phrase())),
             colors: Vec::new(),
             char_ptr: 0,
@@ -51,8 +54,7 @@ impl Phrase {
             self.char_ptr += 1;
         }
 
-        // check if ptr == len(self.phrase)
-        // if so, reset
+        // check if ptr reached end of phrase
         if self.char_ptr == self.queue.0.len() {
             self.reset();
         }

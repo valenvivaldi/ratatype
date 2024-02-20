@@ -77,6 +77,7 @@ pub fn ui(frame: &mut Frame, phrase: &Phrase) {
     )
     .flex(Flex::Center)
     .split(frame.size());
+
     frame.render_widget(
         Block::new()
             .borders(Borders::TOP)
@@ -86,12 +87,22 @@ pub fn ui(frame: &mut Frame, phrase: &Phrase) {
         main_layout[0],
     );
 
-    let inner_layout = Layout::new(Direction::Vertical, [Constraint::Percentage(100)])
-        .flex(Flex::Center)
-        .split(main_layout[1]);
+    let inner_layout = Layout::new(
+        Direction::Vertical,
+        [Constraint::Length(1), Constraint::Length(1)],
+    )
+    .flex(Flex::Center)
+    .split(main_layout[1]);
+
+    // current line being typed
     frame.render_widget(
-        Paragraph::new(colored_text(phrase)).block(Block::new().borders(Borders::ALL)),
+        Paragraph::new(colored_text(phrase)).alignment(Alignment::Center),
         inner_layout[0],
+    );
+
+    frame.render_widget(
+        Paragraph::new(phrase.queue.1.as_str()).alignment(Alignment::Center),
+        inner_layout[1],
     );
 }
 
