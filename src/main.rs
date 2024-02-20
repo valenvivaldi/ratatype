@@ -73,7 +73,7 @@ pub fn ui(frame: &mut Frame, phrase: &Phrase) {
 
     let main_layout = Layout::new(
         Direction::Vertical,
-        [Constraint::Length(1), Constraint::Percentage(30)],
+        [Constraint::Length(1), Constraint::Percentage(10)],
     )
     .flex(Flex::Center)
     .split(frame.size());
@@ -81,7 +81,7 @@ pub fn ui(frame: &mut Frame, phrase: &Phrase) {
     frame.render_widget(
         Block::new()
             .borders(Borders::TOP)
-            .title("ratatype".white().to_centered_line())
+            .title("ratatype".black().on_white().to_centered_line())
             .bold()
             .white(),
         main_layout[0],
@@ -101,7 +101,11 @@ pub fn ui(frame: &mut Frame, phrase: &Phrase) {
     );
 
     frame.render_widget(
-        Paragraph::new(phrase.queue.1.as_str()).alignment(Alignment::Center),
+        Paragraph::new(Span::styled(
+            phrase.queue.1.as_str(),
+            Style::new().fg(Color::Gray),
+        ))
+        .alignment(Alignment::Center),
         inner_layout[1],
     );
 }
@@ -115,14 +119,17 @@ pub fn colored_text(phrase: &Phrase) -> Text {
             let correct = phrase.colors.get(i).unwrap();
             colored_chars.push(Span::styled(
                 phrase_char.to_string().clone(),
-                Style::new().bg(if *correct {
+                Style::new().fg(if *correct {
                     Color::LightGreen
                 } else {
                     Color::Red
                 }),
             ));
         } else {
-            colored_chars.push(Span::raw(phrase_char.to_string().clone()));
+            colored_chars.push(Span::styled(
+                phrase_char.to_string().clone(),
+                Style::new().fg(Color::Gray),
+            ));
         }
     }
     let line = Line::from(colored_chars);
