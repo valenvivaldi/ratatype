@@ -1,6 +1,11 @@
+use std::env;
+use std::io::Read;
+use std::{fs::File, io::BufReader};
+
+use serde::{Deserialize, Serialize};
+use serde_json::Result;
+
 use rand::prelude::*;
-use ratatui::prelude::*;
-use ratatui::widgets::*;
 
 pub struct Phrase {
     pub queue: (String, String),
@@ -8,22 +13,41 @@ pub struct Phrase {
     pub char_ptr: usize,
 }
 
+#[derive(Serialize, Deserialize)]
+struct Words {
+    content: Vec<String>,
+}
+
 fn gen_phrase() -> String {
-    let mut rng = thread_rng();
-    let mut words = [
-        "sam",
-        "frodo",
-        "gondor",
-        "comarca",
-        "fakita",
-        "nolocasesacolon",
-    ];
-    words.shuffle(&mut rng);
-    let mut w = String::new();
-    for word in words {
-        w.push_str(format!("{} ", word).as_str());
+    let json_path: String;
+    match env::current_dir() {
+        Ok(current_dir) => {
+            json_path = format!("{}/{}", current_dir.display().to_string(), "words.json");
+        }
+        Err(e) => {
+            panic!("Error al obtener el directorio actual: {}", e);
+        }
     }
-    w
+    let mut json = File::open(&json_path).expect("error opening json");
+    let mut json_content = String::new();
+    match json.read_to_string(&mut json_content) {
+        Ok(_) => {}
+        Err(e) => panic!("err reading json"),
+    }
+    let mut w: Words = serde_json::from_str(&json_content).expect("error deserializing");
+
+    let mut rng = thread_rng();
+    w.content.shuffle(&mut rng);
+    let mut words = String::new();
+    let mut c = 0;
+    for word in w.content {
+        words.push_str(format!("{} ", word).as_str());
+        c += 1;
+        if c > 5 {
+            break;
+        }
+    }
+    words
 }
 
 impl Phrase {

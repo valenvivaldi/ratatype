@@ -1,0 +1,3 @@
+struct Words {
+    text: String,
+}

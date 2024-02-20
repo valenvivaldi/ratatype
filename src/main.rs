@@ -8,13 +8,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     ExecutableCommand,
 };
-use ratatui::{
-    layout::Flex,
-    prelude::*,
-    style::Style,
-    widgets::{block::Position, *},
-    Frame, Terminal,
-};
+use ratatui::{layout::Flex, prelude::*, style::Style, widgets::*, Frame, Terminal};
 
 fn main() -> Result<(), Error> {
     enable_raw_mode()?; // no line buffering
@@ -47,9 +41,8 @@ pub fn handle_event(phrase: &Phrase) -> Result<(Option<bool>, bool), Error> {
             if k.kind == event::KeyEventKind::Press {
                 let chars: Vec<char> = phrase.queue.0.chars().collect();
                 let cur_char: char = *chars.get(phrase.char_ptr).unwrap();
-                let char_kc = KeyCode::Char(cur_char);
                 match k.code {
-                    KeyCode::Char('q') => {
+                    KeyCode::Esc => {
                         return Ok((Some(false), true));
                     }
                     KeyCode::Char(c) => {
