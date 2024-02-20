@@ -18,10 +18,10 @@ use ratatui::{
 
 fn main() -> Result<(), Error> {
     enable_raw_mode()?; // no line buffering
-    stdout().execute(EnterAlternateScreen);
+    stdout().execute(EnterAlternateScreen)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
     let mut should_quit = false;
-    let mut is_correct: Option<bool> = None;
+    let mut is_correct: Option<bool>;
 
     let mut phrase = Phrase::new();
 
@@ -30,13 +30,17 @@ fn main() -> Result<(), Error> {
         (is_correct, should_quit) = handle_event(&phrase).unwrap();
         phrase.update(is_correct);
     }
-    disable_raw_mode();
-    stdout().execute(LeaveAlternateScreen);
+    disable_raw_mode()?;
+    stdout().execute(LeaveAlternateScreen)?;
 
     Ok(())
 }
 
-// returns 'should_quit'
+// returns following tuple:
+// 1 - Option<bool>: None if didn't pressed a key.
+//                   Some(true) if pressed correctly.
+//                   Some(false) if pressed wrong key.
+// 2 - bool: true if wants to exit
 pub fn handle_event(phrase: &Phrase) -> Result<(Option<bool>, bool), Error> {
     if event::poll(std::time::Duration::from_millis(50))? {
         if let Event::Key(k) = event::read()? {
@@ -113,18 +117,3 @@ pub fn colored_text(phrase: &Phrase) -> Text {
     let line = Line::from(colored_chars);
     Text::from(vec![line])
 }
-
-/*
- *how to create the cursor?
-how to make the cursor move and also to change the color of each lett
-er when pressed?
-
-maybe: create logic OUTSIDE ratatui/crossterm to generate the entire
-PHRASES.
-           maybe we can have a cursor for that specific PHRASE to see
- in which letter we currently are,
-           and with the event handlers move the cursor and change the
- colors.
-           when the phrase ends, start again (generate new phrase)
-
- * */
